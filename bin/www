@@ -5,8 +5,10 @@
  */
 
 const app = require('../app');
-const debug = require('debug')('gen:server');
+const debug = require('debug')('express-socketio-redis-sample:server');
 const http = require('http');
+const { Server } = require('socket.io');
+const { createAdapter } = require('@socket.io/redis-adapter');
 const { createClient } = require('redis');
 
 /**
@@ -24,6 +26,9 @@ const server = http.createServer(app);
 const pubClient = createClient({ url: 'redis://kvs:6379' });
 const subClient = pubClient.duplicate();
 Promise.all([pubClient.connect(), subClient.connect()]);
+const io = new Server(server, {
+  adapter: createAdapter(pubClient, subClient),
+});
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -32,6 +37,28 @@ Promise.all([pubClient.connect(), subClient.connect()]);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+const ROOM_ID = 'my_room';
+
+io.on('connection', (socket) => {
+  console.log(`socket is connected`);
+  socket.join(ROOM_ID);
+  socket.on('disconnect', () => {
+    console.log('socket is disconnected');
+  });
+  socket.on('message', (message) => {
+    console.log(`message: ${message}`);
+    io.emit('message', message)
+  });
+});
+io.of('/').adapter.on('create-room', (room) => {
+  console.log(`room ${room} was created`);
+  io.to(room).emit('create-room', room)
+});
+io.of('/').adapter.on('join-room', (room, id) => {
+  console.log(`socket ${id} has joined room ${room}`);
+  io.to(room).emit('join-room', room, id)
+});
 
 /**
  * Normalize a port into a number, string, or false.
