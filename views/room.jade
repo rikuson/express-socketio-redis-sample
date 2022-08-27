@@ -1,11 +1,21 @@
 extends layout
 
 block content
-  h1= title
-  input(id='subscribing', type='text', readonly)
-  form(id='publisher', onsubmit='window.onSubmit(event);')
-    input(id='publishing', type='text')
-    button(type='submit')= 'Publish'
+  .relative.bg-gray-800
+    .mx-auto
+      .flex.justify-between.items-center.p-4
+        .flex.justify-start.items-center.text-gray-300
+          img.h-8.w-auto(src='https://tailwindui.com/img/logos/workflow-mark.svg?color=indigo&shade=600', alt='logo')
+          span.px-3= title
+        .flex.justify-end.items-center.text-gray-400
+          span.pl-3= `Room ${roomId}`
+          span.pl-3= `User ${roomId}`
+  div#subscribing.shadow-inner.bg-gray-100(style='height: calc(100vh - 64px - 38px)')
+  form#publisher.absolute.bottom-0.w-full(onsubmit='window.onSubmit(event)')
+    .flex.border-t.border-gray-300.py-2.px-3
+      input#publishing(class='placeholder-gray-500 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full sm:text-sm outline-none', type='text', placeholder='...')
+      button.text-indigo-600(type='submit')
+        i.fa-solid.fa-paper-plane
   script.
     const ROOM_ID = '!{roomId}'
   script(type='module', src='/javascripts/room.js')
