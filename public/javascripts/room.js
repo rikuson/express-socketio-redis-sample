@@ -1,9 +1,8 @@
 import { io } from 'https://cdn.socket.io/4.5.1/socket.io.esm.min.js';
 
-const publishing = document.getElementById('publishing');
-const subscribing = document.getElementById('subscribing');
-
-const socket = io();
+const socket = io({
+  query: { roomId: ROOM_ID },
+});
 socket.on('connect', () => {
   console.log('socket is connected');
 });
@@ -17,6 +16,9 @@ socket.on('message', (message) => {
   console.log(`subscribe: ${message}`);
   subscribing.value = message;
 });
+
+const publishing = document.getElementById('publishing');
+const subscribing = document.getElementById('subscribing');
 
 function onSubmit(e) {
   event.preventDefault();

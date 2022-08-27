@@ -38,17 +38,16 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-const ROOM_ID = 'my_room';
-
 io.on('connection', (socket) => {
   console.log(`socket is connected`);
-  socket.join(ROOM_ID);
+  const { roomId } = socket.handshake.query;
+  socket.join(roomId);
   socket.on('disconnect', () => {
     console.log('socket is disconnected');
   });
   socket.on('message', (message) => {
     console.log(`message: ${message}`);
-    io.emit('message', message)
+    io.to(roomId).emit('message', message)
   });
 });
 io.of('/').adapter.on('create-room', (room) => {

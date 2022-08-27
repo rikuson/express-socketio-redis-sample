@@ -6,3 +6,6 @@ block content
   form(id='publisher', onsubmit='window.onSubmit(event);')
     input(id='publishing', type='text')
     button(type='submit')= 'Publish'
+  script.
+    const ROOM_ID = '!{roomId}'
+  script(type='module', src='/javascripts/room.js')

@@ -2,4 +2,7 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  form(onsubmit='window.onSubmit(event);')
+    input(id='room-id', type='text')
+    button(type='submit')= 'Enter'
+  script(type='module', src='/javascripts/index.js')
