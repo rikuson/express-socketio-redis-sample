@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  h1= title
+  input(id='subscribing', type='text', readonly)
+  form(id='publisher', onsubmit='window.onSubmit(event);')
+    input(id='publishing', type='text')
+    button(type='submit')= 'Publish'
