@@ -6,27 +6,29 @@ const subscribing = document.getElementById('subscribing');
 const socket = io({
   query: { roomId: ROOM_ID },
 });
+log('up', `Try to connect socket with query: { roomId: ${ROOM_ID} }`);
+
 socket.on('connect', () => {
-  log('down', 'connect', 'socket is connected');
+  log('down', 'Socket is connected', 'connect');
 });
 socket.on('create-room', (room) => {
-  log('down', 'create-room', `room ${room} was created`);
+  log('down', `Room ${room} was created`, 'create-room');
 });
 socket.on('join-room', (room, id) => {
-  log('down', 'join-room', `socket ${id} has joined room ${room}`);
+  log('down', `Socket ${id} has joined room ${room}`, 'join-room');
 });
 socket.on('message', (msg) => {
-  log('down', 'message', msg);
+  log('down', msg, 'message');
 });
 
 function onSubmit(e) {
   event.preventDefault();
   socket.emit('message', publishing.value);
-  log('up', 'message', publishing.value);
+  log('up', publishing.value, 'message');
   publishing.value = '';
 }
 
-function log(type, evt, msg) {
+function log(type, msg, evt) {
   const div = document.createElement('div');
   div.className = 'p-2 border-b overflow-hidden';
   const i = document.createElement('i');
@@ -34,7 +36,10 @@ function log(type, evt, msg) {
   const time = document.createElement('time');
   time.innerText = timeString(new Date);
   time.className = 'text-gray-400 float-right';
-  div.append(i, `${evt}: ${msg}`, time);
+  const span = document.createElement('span');
+  span.className = 'bg-gray-600 text-white rounded px-2 py-1 mr-2 text-sm';
+  span.innerText = evt;
+  div.append(i, evt ? span : '', msg, time);
   subscribing.append(div);
 }
 
