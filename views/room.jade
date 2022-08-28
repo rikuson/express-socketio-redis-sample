@@ -19,7 +19,7 @@ block content
   div#subscribing.shadow-inner.bg-gray-100.overflow-y-auto(style='height: calc(100vh - 64px - 45px)')
   form#publisher.absolute.bottom-0.w-full(onsubmit='window.onSubmit(event)')
     .flex.border-t.border-gray-300.py-2.px-3
-      input#publishing(class='placeholder-gray-500 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full outline-none', type='text', placeholder='...', autofocus)
+      input#publishing(class='placeholder-gray-500 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full outline-none', type='text', placeholder='...', autofocus, autocomplete='off')
       button.text-indigo-600(type='submit').text-lg
         i.fa-solid.fa-paper-plane
   script.

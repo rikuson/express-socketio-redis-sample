@@ -38,7 +38,7 @@ function log({ type, msg, obj, evt }) {
   const div = document.createElement('div');
   div.className = 'p-2 border-b overflow-hidden leading-loose';
   const i = document.createElement('i');
-  i.className = `fa-solid fa-${type}-long mr-2 text-gray-400`;
+  i.className = `fa-solid fa-${type}-long mr-2 text-${type === 'up' ? 'red' : 'emerald'}-400`;
   const time = document.createElement('time');
   time.innerText = timeString(new Date);
   time.className = 'text-gray-400 float-right text-sm leading-loose';
