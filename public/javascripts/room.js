@@ -28,7 +28,7 @@ function onSubmit(e) {
 
 function log(type, evt, msg) {
   const div = document.createElement('div');
-  div.className = 'p-2 border-b';
+  div.className = 'p-2 border-b overflow-hidden';
   const i = document.createElement('i');
   i.className = `fa-solid fa-${type}-long mr-3 text-gray-400`;
   const time = document.createElement('time');
