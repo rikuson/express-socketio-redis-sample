@@ -10,6 +10,8 @@ block content
         .flex.justify-end.items-center.text-gray-400
           span.pl-3= `Room ${roomId}`
           span.pl-3= `User ${roomId}`
+          a(class='pl-5 text-gray-400 hover:text-white focus:outline-none', href='/')
+            i.fa-solid.fa-right-from-bracket
   div#subscribing.shadow-inner.bg-gray-100(style='height: calc(100vh - 64px - 38px)')
   form#publisher.absolute.bottom-0.w-full(onsubmit='window.onSubmit(event)')
     .flex.border-t.border-gray-300.py-2.px-3
