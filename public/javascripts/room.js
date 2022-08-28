@@ -46,7 +46,7 @@ function log({ type, msg, obj, evt }) {
   span.className = 'bg-gray-600 text-white rounded px-2 py-1 mr-2 text-sm';
   span.innerText = evt;
   const code = document.createElement('code');
-  code.className = 'text-gray-400 text-sm ml-2';
+  code.className = 'text-gray-400 text-sm ml-2 break-words';
   code.innerText = JSON.stringify(obj);
   div.append(i, evt ? span : '', msg, obj ? code : '', time);
   subscribing.append(div);
