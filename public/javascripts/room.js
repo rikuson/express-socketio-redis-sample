@@ -23,7 +23,7 @@ socket.on('join-room', (obj) => {
 });
 socket.on('message', (obj) => {
   const { userName, message } = obj;
-  log({ type: 'down', msg: `${userName}'s message "${message}"`, obj, evt: 'message' });
+  log({ type: 'down', msg: `Receive ${userName}'s message "${message}"`, obj, evt: 'message' });
 });
 
 function onSubmit(e) {
