@@ -21,9 +21,8 @@ socket.on('message', (msg) => {
 
 function onSubmit(e) {
   event.preventDefault();
-  const val = publishing.value;
-  socket.emit('message', val);
-  log('up', 'message', val);
+  socket.emit('message', publishing.value);
+  log('up', 'message', publishing.value);
   publishing.value = '';
 }
 
@@ -32,8 +31,16 @@ function log(type, evt, msg) {
   div.className = 'p-2 border-b';
   const i = document.createElement('i');
   i.className = `fa-solid fa-${type}-long mr-3 text-gray-400`;
-  div.append(i, `${evt}: ${msg}`);
+  const time = document.createElement('time');
+  time.innerText = timeString(new Date);
+  time.className = 'text-gray-400 float-right';
+  div.append(i, `${evt}: ${msg}`, time);
   subscribing.append(div);
+}
+
+function timeString(date) {
+  const ms = ('00' + date.getMilliseconds()).slice(-3);
+  return `${date.toLocaleString('ja-JP')}.${ms}`;
 }
 
 window.onSubmit = onSubmit;
