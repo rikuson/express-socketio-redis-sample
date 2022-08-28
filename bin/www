@@ -39,24 +39,25 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 io.on('connection', (socket) => {
-  console.log(`socket is connected`);
-  const { roomId } = socket.handshake.query;
+  console.log(`Socket is connected`);
+  const { roomId, userName } = socket.handshake.query;
+  socket.data.userName = userName;
   socket.join(roomId);
   socket.on('disconnect', () => {
-    console.log('socket is disconnected');
+    console.log('Socket is disconnected');
   });
-  socket.on('message', (message) => {
-    console.log(`message: ${message}`);
-    io.to(roomId).emit('message', message)
+  socket.on('message', ({ message }) => {
+    console.log(`${userName}'s message "${message}"`);
+    io.to(roomId).emit('message', { userName, message })
   });
 });
 io.of('/').adapter.on('create-room', (room) => {
-  console.log(`room ${room} was created`);
-  io.to(room).emit('create-room', room)
+  console.log(`Room ${room} was created`);
+  io.to(room).emit('create-room', { room })
 });
 io.of('/').adapter.on('join-room', (room, id) => {
-  console.log(`socket ${id} has joined room ${room}`);
-  io.to(room).emit('join-room', room, id)
+  console.log(`Socket ${id} has joined room ${room}`);
+  io.to(room).emit('join-room', { room, id })
 });
 
 /**

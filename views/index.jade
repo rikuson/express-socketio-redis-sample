@@ -8,11 +8,13 @@ block content
         h2.mt-6.text-center.text-3xl.tracking-tight.font-bold.text-gray-900= title
         p.mt-2.text-center.text-sm.text-gray-600
       form.mt-8.space-y-6(onsubmit='window.onSubmit(event)')
-        input(type='hidden', name='remember', value='true')
         .rounded-md.shadow-sm.-space-y-px
           div
             label.sr-only(for='room-id') Room ID
-            input#room-id(class='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm', type='text', required='required', placeholder='Room ID')
+            input#room-id(class='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10', type='text', required='required', placeholder='Room ID')
+          div
+            label.sr-only(for='user-name') User Name
+            input#user-name(class='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10', type='text', required='required', placeholder='User Name')
         div
           button(class='group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500', type='submit')
             span.absolute.left-0.inset-y-0.flex.items-center.pl-3

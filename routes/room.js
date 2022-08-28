@@ -5,7 +5,8 @@ const router = express.Router();
 router.get('/:roomId', function(req, res, next) {
   res.render('room', {
     title: 'Pub/Sub Sample',
-    roomId: req.params.roomId
+    roomId: req.params.roomId,
+    userName: req.query.userName,
   });
 });
 
