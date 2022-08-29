@@ -63,6 +63,14 @@ function closeSidebar(e) {
   menu.style.right = '-385px';
 }
 
+function toggleDarkmode(e) {
+  if (e.target.checked) {
+    document.body.classList.add('dark')
+  } else {
+    document.body.classList.remove('dark')
+  }
+}
+
 function log({ type, msg, obj, evt }) {
   const div = document.createElement('div');
   div.className = 'p-2 border-b overflow-hidden leading-loose';
@@ -89,3 +97,4 @@ function timeString(date) {
 window.onSubmitMessage = submitMessage;
 window.onClickMenu = openSidebar;
 window.onCloseSidebar = closeSidebar;
+window.onToggleDarkmodeSwitch = toggleDarkmode;

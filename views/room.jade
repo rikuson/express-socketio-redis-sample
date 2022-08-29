@@ -8,6 +8,11 @@ block content
           img.h-8.w-auto(src='https://tailwindui.com/img/logos/workflow-mark.svg?color=indigo&shade=600', alt='logo')
           span.px-3.hidden(class='md:inline')= title
         .flex.justify-end.items-center
+          label.flex.items-center.mr-4
+            i.fa-solid.fa-sun.mr-1
+            input.peer.sr-only(type='checkbox', checked, onchange='window.onToggleDarkmodeSwitch(event)')
+            span.block.cursor-pointer.bg-gray-500.rounded-full(class='w-[2em] p-[1px] after:block after:h-[1em] after:w-[1em] after:rounded-full after:bg-white after:transition peer-checked:bg-blue-500 peer-checked:after:translate-x-[calc(100%-2px)]')
+            i.fa-solid.fa-moon.ml-1
           button(onclick='window.onClickMenu(event)')
             i.fa-solid.fa-bars
   #subscribing.shadow-inner.bg-gray-100.overflow-y-auto(style='height: calc(100vh - 64px - 45px)')
