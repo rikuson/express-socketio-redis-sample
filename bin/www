@@ -50,6 +50,10 @@ io.on('connection', (socket) => {
     console.log(`Receive ${userName}'s message "${message}"`);
     io.to(roomId).emit('message', { id: socket.id, userName, message });
   });
+  socket.on('darkmode', ({ darkmode }) => {
+    console.log(`Change dark mode "${darkmode}"`);
+    io.to(roomId).emit('darkmode', { id: socket.id, userName, darkmode });
+  });
 });
 io.of('/').adapter.on('create-room', (room) => {
   console.log(`Room ${room} was created`);

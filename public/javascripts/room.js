@@ -5,24 +5,25 @@ const subscribing = document.getElementById('subscribing');
 const menu = document.getElementById('menu');
 const currentRoom = document.getElementById('current-room');
 const roomList = document.getElementById('room-list');
+const darkmodeSwitch = document.getElementById('darkmode-switch');
 
 const query = {
   roomId: ROOM_ID,
   userName: USER_NAME,
 };
 const socket = io({ query });
-log({ type: 'up', msg: 'Try to connect socket', obj: query });
+log({ type: 'up', msg: 'Try to connect socket', data: query });
 
 socket.on('connect', () => {
   log({ type:  'down', msg: 'Socket is connected', evt: 'connect' });
 });
-socket.on('create-room', (obj) => {
-  const { room } =  obj;
-  log({ type: 'down', msg: `Room ${room} was created`, obj, evt: 'create-room' });
+socket.on('create-room', (data) => {
+  const { room } =  data;
+  log({ type: 'down', msg: `Room ${room} was created`, data, evt: 'create-room' });
 });
-socket.on('join-room', (obj) => {
-  const { id, room, users, rooms } = obj;
-  log({ type: 'down', msg: `Socket ${id} has joined room ${room}`, obj, evt: 'join-room' });
+socket.on('join-room', (data) => {
+  const { id, room, users, rooms } = data;
+  log({ type: 'down', msg: `Socket ${id} has joined room ${room}`, data, evt: 'join-room' });
 
   currentRoom.innerHTML = users.map((user) => `
     <li class="p-3${user.id === socket.id ? ' font-bold' : ''}">
@@ -42,36 +43,49 @@ socket.on('join-room', (obj) => {
       </div>
     `).join('');
 });
-socket.on('message', (obj) => {
-  const { userName, message } = obj;
-  log({ type: 'down', msg: `Receive ${userName}'s message "${message}"`, obj, evt: 'message' });
+socket.on('message', (data) => {
+  const { userName, message } = data;
+  log({ type: 'down', msg: `Receive ${userName}'s message "${message}"`, data, evt: 'message' });
+});
+socket.on('darkmode', (data) => {
+  const { darkmode } = data;
+  log({ type: 'down', msg: `Change dark mode "${darkmode}"`, data, evt: 'darkmode' });
+  darkmodeSwitch.checked = darkmode;
+  changeDarkmode(darkmode);
 });
 
 function submitMessage(e) {
   event.preventDefault();
-  const message = { message: publishing.value }
-  socket.emit('message', message);
-  log({ type: 'up', msg: 'Send message', obj: message, evt: 'message' });
+  const data = { message: publishing.value }
+  socket.emit('message', data);
+  log({ type: 'up', msg: 'Send message', data, evt: 'message' });
   publishing.value = '';
 }
 
-function openSidebar(e) {
+function openSidebar() {
   menu.style.right = '0px';
 }
 
-function closeSidebar(e) {
+function closeSidebar() {
   menu.style.right = '-385px';
 }
 
-function toggleDarkmode(e) {
-  if (e.target.checked) {
+function onToggleDarkmodeSwitch(e) {
+  changeDarkmode(e.target.checked);
+  const data = { darkmode: e.target.checked };
+  log({ type: 'up', msg: 'Change darkmode', data, evt: 'darkmode' });
+  socket.emit('darkmode', data);
+}
+
+function changeDarkmode(darkmode) {
+  if (darkmode) {
     document.body.classList.add('dark')
   } else {
     document.body.classList.remove('dark')
   }
 }
 
-function log({ type, msg, obj, evt }) {
+function log({ type, msg, data, evt }) {
   const div = document.createElement('div');
   div.className = 'p-2 border-b overflow-hidden leading-loose';
   const i = document.createElement('i');
@@ -84,8 +98,8 @@ function log({ type, msg, obj, evt }) {
   span.innerText = evt;
   const code = document.createElement('code');
   code.className = 'text-gray-400 text-sm ml-2 break-words italic';
-  code.innerText = JSON.stringify(obj);
-  div.append(i, evt ? span : '', msg, obj ? code : '', time);
+  code.innerText = JSON.stringify(data);
+  div.append(i, evt ? span : '', msg, data ? code : '', time);
   subscribing.append(div);
 }
 
@@ -97,4 +111,4 @@ function timeString(date) {
 window.onSubmitMessage = submitMessage;
 window.onClickMenu = openSidebar;
 window.onCloseSidebar = closeSidebar;
-window.onToggleDarkmodeSwitch = toggleDarkmode;
+window.onToggleDarkmodeSwitch = onToggleDarkmodeSwitch;
