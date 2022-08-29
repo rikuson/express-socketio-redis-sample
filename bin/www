@@ -10,6 +10,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { createAdapter } = require('@socket.io/redis-adapter');
 const { createClient } = require('redis');
+const SessionStore = require('../session-store.js');
 
 /**
  * Get port from environment and store in Express.
@@ -29,6 +30,7 @@ Promise.all([pubClient.connect(), subClient.connect()]);
 const io = new Server(server, {
   adapter: createAdapter(pubClient, subClient),
 });
+const sessionStore = new SessionStore(pubClient);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -38,11 +40,13 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   const { roomId, userName } = socket.handshake.query;
   console.log(`Socket is connected`, socket.handshake.query);
   socket.data.userName = userName;
   socket.join(roomId);
+  const session = await sessionStore.find('room', roomId) ||
+    sessionStore.create('room', roomId);
   socket.on('disconnect', () => {
     console.log('Socket is disconnected');
   });
@@ -53,14 +57,16 @@ io.on('connection', (socket) => {
   socket.on('darkmode', ({ darkmode }) => {
     console.log(`Change dark mode "${darkmode}"`);
     io.to(roomId).emit('darkmode', { id: socket.id, userName, darkmode });
+    session.setState({ darkmode });
   });
 });
 io.of('/').adapter.on('create-room', (room) => {
   console.log(`Room ${room} was created`);
   io.emit('create-room', { room });
 });
-io.of('/').adapter.on('join-room', async (room, id) => {
-  console.log(`Socket ${id} has joined room ${room}`);
+io.of('/').adapter.on('join-room', async (roomId, id) => {
+  console.log(`Socket ${id} has joined room ${roomId}`);
+  const session = await sessionStore.find('room', roomId);
   const sockets = await io.fetchSockets();
   const users = sockets.reduce((categorized, socket) => {
     const user = {
@@ -68,14 +74,14 @@ io.of('/').adapter.on('join-room', async (room, id) => {
       name: socket.data.userName,
       rooms: socket.rooms,
     };
-    const category = Array.from(socket.rooms).includes(room) ? 'inside' : 'outside';
+    const category = Array.from(socket.rooms).includes(roomId) ? 'inside' : 'outside';
     categorized[category].push(user)
     return categorized;
   }, { inside: [], outside: [] });
   const rooms = Array.from(io.of('/').adapter.rooms)
     .filter(([room]) => !users.outside.some((user) => user.id === room))
     .map(([room]) => room);
-  io.to(room).emit('join-room', { room, id, users: users.inside, rooms });
+  io.to(roomId).emit('join-room', { room: roomId, id, darkmode: session ? session.state.darkmode : true, users: users.inside, rooms });
 });
 
 /**
