@@ -15,12 +15,16 @@ socket.on('connect', () => {
   log({ type:  'down', msg: 'Socket is connected', evt: 'connect' });
 });
 socket.on('create-room', (data) => {
-  const { room } =  data;
-  log({ type: 'down', msg: `Room ${room} was created`, data, evt: 'create-room' });
+  const { roomId } =  data;
+  log({ type: 'down', msg: `Room ${roomId} was created`, data, evt: 'create-room' });
+});
+socket.on('delete-room', (data) => {
+  const { roomId } =  data;
+  log({ type: 'down', msg: `Room ${roomId} was deleted`, data, evt: 'delete-room' });
 });
 socket.on('join-room', (data) => {
-  const { id, room, darkmode, users, rooms } = data;
-  log({ type: 'down', msg: `Socket ${id} has joined room ${room}`, data, evt: 'join-room' });
+  const { id, roomId, darkmode, users, rooms } = data;
+  log({ type: 'down', msg: `Socket ${id} has joined room ${roomId}`, data, evt: 'join-room' });
   darkmodeSwitch.checked = darkmode;
   changeDarkmode(darkmode);
 });

@@ -14,9 +14,16 @@ class SessionStore {
     return session;
   }
 
-  create(prefix, id) {
+  async create(prefix, id) {
     const key = `${prefix}:${id}`;
-    return new Session(this.redis, key);
+    const session = new Session(this.redis, key);
+    await session.setState({});
+    return session;
+  }
+
+  delete(prefix, id) {
+    const key = `${prefix}:${id}`;
+    return this.redis.del(key);
   }
 }
 
