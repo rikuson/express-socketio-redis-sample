@@ -21,10 +21,16 @@ class SessionStore {
 }
 
 class Session {
+  static get DEFAULT_STATE() {
+    return {
+      darkmode: true,
+    };
+  }
+
   constructor(redis, key) {
     this.key = key;
     this.redis = redis;
-    this.state = {};
+    this.state = Session.DEFAULT_STATE;
   }
 
   setState(state) {
@@ -32,8 +38,8 @@ class Session {
       ...this.state,
       ...state,
     };
-    this.redis.set(this.key, JSON.stringify(this.state));
+    return this.redis.set(this.key, JSON.stringify(this.state));
   }
 }
 
-module.exports = SessionStore;
+module.exports = { SessionStore, Session };

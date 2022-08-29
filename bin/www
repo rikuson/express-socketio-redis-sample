@@ -10,7 +10,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { createAdapter } = require('@socket.io/redis-adapter');
 const { createClient } = require('redis');
-const SessionStore = require('../session-store.js');
+const { SessionStore, Session } = require('../session-store.js');
 
 /**
  * Get port from environment and store in Express.
@@ -81,7 +81,8 @@ io.of('/').adapter.on('join-room', async (roomId, id) => {
   const rooms = Array.from(io.of('/').adapter.rooms)
     .filter(([room]) => !users.outside.some((user) => user.id === room))
     .map(([room]) => room);
-  io.to(roomId).emit('join-room', { room: roomId, id, darkmode: session ? session.state.darkmode : true, users: users.inside, rooms });
+  const { darkmode } = session?.state ?? Session.DEFAULT_STATE;
+  io.to(roomId).emit('join-room', { room: roomId, id, darkmode, users: users.inside, rooms });
 });
 
 /**
