@@ -9,8 +9,8 @@ const debug = require('debug')('express-socketio-redis-sample:server');
 const http = require('http');
 const { Server } = require('socket.io');
 const { createAdapter } = require('@socket.io/redis-adapter');
-const { createClient } = require('redis');
-const { SessionStore, Session } = require('../session-store.js');
+const redis = require('../redis.js');
+const RoomSessionStore = require('../room-session-store.js')(redis);
 
 /**
  * Get port from environment and store in Express.
@@ -24,13 +24,12 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
-const pubClient = createClient({ url: 'redis://kvs:6379' });
-const subClient = pubClient.duplicate();
+const pubClient = redis;
+const subClient = redis.duplicate();
 Promise.all([pubClient.connect(), subClient.connect()]);
 const io = new Server(server, {
   adapter: createAdapter(pubClient, subClient),
 });
-const sessionStore = new SessionStore(pubClient);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -45,7 +44,7 @@ io.on('connection', async (socket) => {
   console.log(`Socket is connected`, socket.handshake.query);
   socket.data.userName = userName;
   socket.join(roomId);
-  const session = await sessionStore.find('room', roomId);
+  const session = await RoomSessionStore.find(roomId);
   socket.on('disconnect', () => {
     console.log('Socket is disconnected');
   });
@@ -57,21 +56,22 @@ io.on('connection', async (socket) => {
     console.log(`Change dark mode "${darkmode}"`);
     io.to(roomId).emit('darkmode', { id: socket.id, roomId, userName, darkmode });
     session.setState({ darkmode });
+    // room.setState({ darkmode });
   });
 });
 io.of('/').adapter.on('create-room', async (roomId) => {
   console.log(`Room ${roomId} was created`);
-  const session = await sessionStore.create('room', roomId);
+  const session = await RoomSessionStore.create(roomId);
   io.emit('create-room', { roomId });
 });
 io.of('/').adapter.on('delete-room', async (roomId) => {
   console.log(`Room ${roomId} was deleted`);
-  await sessionStore.delete('room', roomId);
+  await RoomSessionStore.delete(roomId);
   io.emit('delete-room', { roomId });
 });
 io.of('/').adapter.on('join-room', async (roomId, id) => {
   console.log(`Socket ${id} has joined room ${roomId}`);
-  const session = await sessionStore.find('room', roomId);
+  const session = await RoomSessionStore.find(roomId);
   const sockets = await io.fetchSockets();
   const users = sockets.reduce((categorized, socket) => {
     const user = {
@@ -87,6 +87,7 @@ io.of('/').adapter.on('join-room', async (roomId, id) => {
     .filter(([roomId]) => !users.outside.some((user) => user.id === roomId))
     .map(([roomId]) => roomId);
   const { darkmode } = session.state;
+  // const { darkmode } = room.state
   io.to(roomId).emit('join-room', { roomId, id, darkmode, users: users.inside, rooms });
 });
 
