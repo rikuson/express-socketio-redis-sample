@@ -1,27 +1,32 @@
 extends layout
 
 block content
-  .relative.bg-gray-800
+  .relative.bg-white(class='dark:bg-gray-800')
     .mx-auto
-      .flex.justify-between.items-center.p-4
-        div(class='flex justify-start items-center text-gray-300')
+      .flex.justify-between.items-center.p-4(class='dark:text-gray-300')
+        .flex.justify-start.items-center
           img.h-8.w-auto(src='https://tailwindui.com/img/logos/workflow-mark.svg?color=indigo&shade=600', alt='logo')
-          span(class='px-3 hidden md:inline')= title
-        .flex.justify-end.items-center.text-gray-400
-          span.pl-3
-            i.fa-solid.fa-door-closed.pr-1
-            span= roomId
-          span.pl-3
-            i.fa-solid.fa-user.pr-1
-            span= userName
-          a(class='pl-5 text-gray-400 hover:text-white focus:outline-none', href='/')
-            i.fa-solid.fa-right-from-bracket
-  div#subscribing.shadow-inner.bg-gray-100.overflow-y-auto(style='height: calc(100vh - 64px - 45px)')
-  form#publisher.absolute.bottom-0.w-full(onsubmit='window.onSubmit(event)')
+          span.px-3.hidden(class='md:inline')= title
+        .flex.justify-end.items-center
+          button(onclick='window.onClickMenu(event)')
+            i.fa-solid.fa-bars
+  #subscribing.shadow-inner.bg-gray-100.overflow-y-auto(style='height: calc(100vh - 64px - 45px)')
+  form#publisher.absolute.bottom-0.w-full(onsubmit='window.onSubmitMessage(event)')
     .flex.border-t.border-gray-300.py-2.px-3
       input#publishing(class='placeholder-gray-500 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full outline-none', type='text', placeholder='...', autofocus, autocomplete='off')
       button.text-indigo-600(type='submit').text-lg
         i.fa-solid.fa-paper-plane
+  #menu.drop-shadow.border-l.border-gray-100.absolute.top-0.w-96.max-w-full.bg-white.h-full(style='right: -385px')
+    .flex.justify-between.py-2.px-4
+      div
+        span.font-bold= `Room ${roomId}`
+        a.ml-3(class='hover:text-gray-500', href='/')
+          i.fa-solid.fa-right-from-bracket
+      button.text-xl(onclick='window.onCloseSidebar(event)')
+        i.fa-solid.fa-xmark
+    .border-t.overflow-y-auto(style='height: calc(100vh - 64px - 45px)')
+      ul#current-room.border-b.bg-gray-100
+      #room-list
   script.
     const ROOM_ID = '!{roomId}'
     const USER_NAME = '!{userName}'
