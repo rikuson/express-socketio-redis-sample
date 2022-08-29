@@ -13,25 +13,12 @@ block content
             input#darkmode-switch.peer.sr-only(type='checkbox', checked, onchange='window.onToggleDarkmodeSwitch(event)')
             span.block.cursor-pointer.bg-gray-500.rounded-full(class='w-[2em] p-[1px] after:block after:h-[1em] after:w-[1em] after:rounded-full after:bg-white after:transition peer-checked:bg-blue-500 peer-checked:after:translate-x-[calc(100%-2px)]')
             i.fa-solid.fa-moon.ml-2
-          // button.ml-4(onclick='window.onClickMenu(event)')
-          //   i.fa-solid.fa-bars
   #subscribing.shadow-inner.bg-gray-100.overflow-y-auto(style='height: calc(100vh - 64px - 45px)')
   form#publisher.absolute.bottom-0.w-full(onsubmit='window.onSubmitMessage(event)')
     .flex.border-t.border-gray-300.py-2.px-3
       input#publishing(class='placeholder-gray-500 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full outline-none', type='text', placeholder='...', autofocus, autocomplete='off')
       button.text-indigo-600(type='submit').text-lg
         i.fa-solid.fa-paper-plane
-  #menu.drop-shadow.border-l.border-gray-100.absolute.top-0.w-96.max-w-full.bg-white.h-full(style='right: -385px')
-    .flex.justify-between.py-2.px-4
-      div
-        span.font-bold= `Room ${roomId}`
-        a.ml-3(class='hover:text-gray-500', href='/')
-          i.fa-solid.fa-right-from-bracket
-      button.text-xl(onclick='window.onCloseSidebar(event)')
-        i.fa-solid.fa-xmark
-    .border-t.overflow-y-auto(style='height: calc(100vh - 64px - 45px)')
-      ul#current-room.border-b.bg-gray-100
-      #room-list
   script.
     const ROOM_ID = '!{roomId}'
     const USER_NAME = '!{userName}'

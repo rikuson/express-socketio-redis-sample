@@ -2,9 +2,6 @@ import { io } from 'https://cdn.socket.io/4.5.1/socket.io.esm.min.js';
 
 const publishing = document.getElementById('publishing');
 const subscribing = document.getElementById('subscribing');
-const menu = document.getElementById('menu');
-const currentRoom = document.getElementById('current-room');
-const roomList = document.getElementById('room-list');
 const darkmodeSwitch = document.getElementById('darkmode-switch');
 
 const query = {
@@ -24,27 +21,8 @@ socket.on('create-room', (data) => {
 socket.on('join-room', (data) => {
   const { id, room, darkmode, users, rooms } = data;
   log({ type: 'down', msg: `Socket ${id} has joined room ${room}`, data, evt: 'join-room' });
-
   darkmodeSwitch.checked = darkmode;
   changeDarkmode(darkmode);
-
-  currentRoom.innerHTML = users.map((user) => `
-    <li class="p-3${user.id === socket.id ? ' font-bold' : ''}">
-      <i class="fa-solid fa-user mr-2"></i>
-      ${user.name}${user.id === socket.id ? ' (me)' : ''}
-    </li>
-  `).join('');
-
-  roomList.innerHTML = rooms
-    .filter((roomId) => roomId !== ROOM_ID && !users.some((user) => user.id === roomId))
-    .map((roomId) => `
-      <div class="border-b p-3">
-        <a class="mr-3 hover:text-gray-500" href="/room/${roomId}?userName=${USER_NAME}">
-          <i class="fa-solid fa-right-to-bracket"></i>
-        </a>
-        Room ${roomId}
-      </div>
-    `).join('');
 });
 socket.on('message', (data) => {
   const { userName, message } = data;
@@ -57,20 +35,12 @@ socket.on('darkmode', (data) => {
   changeDarkmode(darkmode);
 });
 
-function submitMessage(e) {
+function onSubmitMessage(e) {
   event.preventDefault();
   const data = { message: publishing.value }
   socket.emit('message', data);
   log({ type: 'up', msg: 'Send message', data, evt: 'message' });
   publishing.value = '';
-}
-
-function openSidebar() {
-  menu.style.right = '0px';
-}
-
-function closeSidebar() {
-  menu.style.right = '-385px';
 }
 
 function onToggleDarkmodeSwitch(e) {
@@ -111,7 +81,7 @@ function timeString(date) {
   return `${date.toLocaleString('ja-JP')}.${ms}`;
 }
 
-window.onSubmitMessage = submitMessage;
+window.onSubmitMessage = onSubmitMessage;
 window.onClickMenu = openSidebar;
 window.onCloseSidebar = closeSidebar;
 window.onToggleDarkmodeSwitch = onToggleDarkmodeSwitch;
