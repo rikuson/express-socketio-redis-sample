@@ -86,6 +86,4 @@ function timeString(date) {
 }
 
 window.onSubmitMessage = onSubmitMessage;
-window.onClickMenu = openSidebar;
-window.onCloseSidebar = closeSidebar;
 window.onToggleDarkmodeSwitch = onToggleDarkmodeSwitch;
