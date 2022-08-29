@@ -3,7 +3,7 @@ const url = process.env.RDIS_URL;
 
 let redis;
 
-module.exports = ((url) => {
+module.exports = (() => {
   redis ??= createClient({ url });
   return redis;
-});
+})();
