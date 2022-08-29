@@ -56,7 +56,6 @@ io.on('connection', async (socket) => {
     console.log(`Change dark mode "${darkmode}"`);
     io.to(roomId).emit('darkmode', { id: socket.id, roomId, userName, darkmode });
     session.setState({ darkmode });
-    // room.setState({ darkmode });
   });
 });
 io.of('/').adapter.on('create-room', async (roomId) => {

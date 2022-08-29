@@ -1,6 +1,9 @@
 const { createClient } = require('redis');
-const url = 'redis://kvs:6379';
+const url = process.env.RDIS_URL;
 
 let redis;
 
-module.exports = redis ?? createClient({ url });
+module.exports = ((url) => {
+  redis ??= createClient({ url });
+  return redis;
+});
