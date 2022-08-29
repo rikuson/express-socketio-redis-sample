@@ -22,8 +22,11 @@ socket.on('create-room', (data) => {
   log({ type: 'down', msg: `Room ${room} was created`, data, evt: 'create-room' });
 });
 socket.on('join-room', (data) => {
-  const { id, room, users, rooms } = data;
+  const { id, room, darkmode, users, rooms } = data;
   log({ type: 'down', msg: `Socket ${id} has joined room ${room}`, data, evt: 'join-room' });
+
+  darkmodeSwitch.checked = darkmode;
+  changeDarkmode(darkmode);
 
   currentRoom.innerHTML = users.map((user) => `
     <li class="p-3${user.id === socket.id ? ' font-bold' : ''}">
