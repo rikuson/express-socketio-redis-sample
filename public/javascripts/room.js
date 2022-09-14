@@ -1,5 +1,6 @@
 import { io } from 'https://cdn.socket.io/4.5.1/socket.io.esm.min.js';
 
+const publisher = document.getElementById('publisher');
 const publishing = document.getElementById('publishing');
 const subscribing = document.getElementById('subscribing');
 const darkmodeSwitch = document.getElementById('darkmode-switch');
@@ -11,48 +12,58 @@ const query = {
 const socket = io({ query, transports: ['websocket'] });
 log({ type: 'up', msg: 'Try to connect socket', data: query });
 
-socket.on('connect', () => {
+const connect$ = rxjs.fromEvent(socket, 'connect');
+const createRoom$ = rxjs.fromEvent(socket, 'create-room');
+const deleteRoom$ = rxjs.fromEvent(socket, 'delete-room');
+const joinRoom$ = rxjs.fromEvent(socket, 'join-room');
+const message$ = rxjs.fromEvent(socket, 'message');
+const darkmode$ = rxjs.fromEvent(socket, 'darkmode');
+
+const submitMessage$ = rxjs.fromEvent(publisher, 'submit');
+const toggleDarkmode$ = rxjs.fromEvent(darkmodeSwitch, 'change');
+
+connect$.subscribe(() => {
   log({ type:  'down', msg: 'Socket is connected', evt: 'connect' });
 });
-socket.on('create-room', (data) => {
+createRoom$.subscribe((data) => {
   const { roomId } =  data;
   log({ type: 'down', msg: `Room ${roomId} was created`, data, evt: 'create-room' });
 });
-socket.on('delete-room', (data) => {
+deleteRoom$.subscribe((data) => {
   const { roomId } =  data;
   log({ type: 'down', msg: `Room ${roomId} was deleted`, data, evt: 'delete-room' });
 });
-socket.on('join-room', (data) => {
+joinRoom$.subscribe((data) => {
   const { id, roomId, darkmode, users, rooms } = data;
   log({ type: 'down', msg: `Socket ${id} has joined room ${roomId}`, data, evt: 'join-room' });
   darkmodeSwitch.checked = darkmode;
   changeDarkmode(darkmode);
 });
-socket.on('message', (data) => {
+message$.subscribe((data) => {
   const { userName, message } = data;
   log({ type: 'down', msg: `Receive ${userName}'s message "${message}"`, data, evt: 'message' });
 });
-socket.on('darkmode', (data) => {
+darkmode$.subscribe((data) => {
   const { darkmode } = data;
   log({ type: 'down', msg: `Change dark mode "${darkmode}"`, data, evt: 'darkmode' });
   darkmodeSwitch.checked = darkmode;
   changeDarkmode(darkmode);
 });
 
-function onSubmitMessage(e) {
+submitMessage$.subscribe((e) => {
   event.preventDefault();
   const data = { message: publishing.value }
   socket.emit('message', data);
   log({ type: 'up', msg: 'Send message', data, evt: 'message' });
   publishing.value = '';
-}
+});
 
-function onToggleDarkmodeSwitch(e) {
+toggleDarkmode$.subscribe((e) => {
   changeDarkmode(e.target.checked);
   const data = { darkmode: e.target.checked };
   log({ type: 'up', msg: 'Change darkmode', data, evt: 'darkmode' });
   socket.emit('darkmode', data);
-}
+});
 
 function changeDarkmode(darkmode) {
   if (darkmode) {
@@ -84,6 +95,3 @@ function timeString(date) {
   const ms = ('00' + date.getMilliseconds()).slice(-3);
   return `${date.toLocaleString('ja-JP')}.${ms}`;
 }
-
-window.onSubmitMessage = onSubmitMessage;
-window.onToggleDarkmodeSwitch = onToggleDarkmodeSwitch;

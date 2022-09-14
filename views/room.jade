@@ -10,11 +10,11 @@ block content
         .flex.justify-end.items-center
           label.flex.items-center
             i.fa-solid.fa-sun.mr-2
-            input#darkmode-switch.peer.sr-only(type='checkbox', checked, onchange='window.onToggleDarkmodeSwitch(event)')
+            input#darkmode-switch.peer.sr-only(type='checkbox', checked)
             span.block.cursor-pointer.bg-gray-500.rounded-full(class='w-[2em] p-[1px] after:block after:h-[1em] after:w-[1em] after:rounded-full after:bg-white after:transition peer-checked:bg-blue-500 peer-checked:after:translate-x-[calc(100%-2px)]')
             i.fa-solid.fa-moon.ml-2
   #subscribing.shadow-inner.bg-gray-100.overflow-y-auto(style='height: calc(100vh - 64px - 45px)')
-  form#publisher.absolute.bottom-0.w-full(onsubmit='window.onSubmitMessage(event)')
+  form#publisher.absolute.bottom-0.w-full
     .flex.border-t.border-gray-300.py-2.px-3
       input#publishing(class='placeholder-gray-500 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full outline-none', type='text', placeholder='...', autofocus, autocomplete='off')
       button.text-indigo-600(type='submit').text-lg
@@ -22,4 +22,5 @@ block content
   script.
     const ROOM_ID = '!{roomId}'
     const USER_NAME = '!{userName}'
+  script(type='application/javascript', src='https://unpkg.com/rxjs@^7/dist/bundles/rxjs.umd.min.js')
   script(type='module', src='/javascripts/room.js')
