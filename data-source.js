@@ -62,7 +62,8 @@ module.exports = ((redis) => {
 
     async unlock(id) {
       const key = this.getKey(id);
-      return redis.del(`lock:${key}`);
+      await redis.del(`lock:${key}`);
+      return true;
     }
 
 
