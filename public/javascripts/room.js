@@ -1,5 +1,7 @@
 import { io } from 'https://cdn.socket.io/4.5.1/socket.io.esm.min.js';
+import LogTalk from './log-talk.js';
 
+const logger = new LogTalk();
 const publishing = document.getElementById('publishing');
 const subscribing = document.getElementById('subscribing');
 const darkmodeSwitch = document.getElementById('darkmode-switch');
@@ -9,32 +11,33 @@ const query = {
   userName: USER_NAME,
 };
 const socket = io({ query });
-log({ type: 'up', msg: 'Try to connect socket', data: query });
+logger.info('Try to connect socket', query);
 
 socket.on('connect', () => {
-  log({ type:  'down', msg: 'Socket is connected', evt: 'connect' });
+  logger.info('Socket is connected');
 });
 socket.on('create-room', (data) => {
   const { roomId } =  data;
-  log({ type: 'down', msg: `Room ${roomId} was created`, data, evt: 'create-room' });
+  logger.info(`Room ${roomId} was created`);
 });
 socket.on('delete-room', (data) => {
   const { roomId } =  data;
-  log({ type: 'down', msg: `Room ${roomId} was deleted`, data, evt: 'delete-room' });
+  logger.info(`Room ${roomId} was deleted`);
 });
 socket.on('join-room', (data) => {
   const { id, roomId, darkmode, users, rooms } = data;
-  log({ type: 'down', msg: `Socket ${id} has joined room ${roomId}`, data, evt: 'join-room' });
+  logger.info(`Socket ${id} has joined room ${roomId}`);
   darkmodeSwitch.checked = darkmode;
   changeDarkmode(darkmode);
 });
 socket.on('message', (data) => {
   const { userName, message } = data;
-  log({ type: 'down', msg: `Receive ${userName}'s message "${message}"`, data, evt: 'message' });
+  logger.info(`Receive ${userName}'s message "${message}"`);
+  renderMessage(userName, message);
 });
 socket.on('darkmode', (data) => {
   const { darkmode } = data;
-  log({ type: 'down', msg: `Change dark mode "${darkmode}"`, data, evt: 'darkmode' });
+  logger.info(`Change dark mode "${darkmode}"`);
   darkmodeSwitch.checked = darkmode;
   changeDarkmode(darkmode);
 });
@@ -43,14 +46,14 @@ function onSubmitMessage(e) {
   event.preventDefault();
   const data = { message: publishing.value }
   socket.emit('message', data);
-  log({ type: 'up', msg: 'Send message', data, evt: 'message' });
+  logger.info('Send message', 'message');
   publishing.value = '';
 }
 
 function onToggleDarkmodeSwitch(e) {
   changeDarkmode(e.target.checked);
   const data = { darkmode: e.target.checked };
-  log({ type: 'up', msg: 'Change darkmode', data, evt: 'darkmode' });
+  logger.info('Change darkmode', 'darkmode');
   socket.emit('darkmode', data);
 }
 
@@ -62,21 +65,10 @@ function changeDarkmode(darkmode) {
   }
 }
 
-function log({ type, msg, data, evt }) {
+function renderMessage(userName, message) {
   const div = document.createElement('div');
   div.className = 'p-2 border-b overflow-hidden leading-loose';
-  const i = document.createElement('i');
-  i.className = `fa-solid fa-${type}-long mr-2 text-${type === 'up' ? 'red' : 'emerald'}-400`;
-  const time = document.createElement('time');
-  time.innerText = timeString(new Date);
-  time.className = 'text-gray-400 float-right text-sm leading-loose';
-  const span = document.createElement('span');
-  span.className = 'bg-gray-600 text-white rounded px-2 py-1 mr-2 text-sm';
-  span.innerText = evt;
-  const code = document.createElement('code');
-  code.className = 'text-gray-400 text-sm ml-2 break-words italic';
-  code.innerText = JSON.stringify(data);
-  div.append(i, evt ? span : '', msg, data ? code : '', time);
+  div.append(`${userName}: ${message}`);
   subscribing.append(div);
 }
 
