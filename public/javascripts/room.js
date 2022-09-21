@@ -26,7 +26,7 @@ socket.on('delete-room', (data) => {
 });
 socket.on('join-room', (data) => {
   const { id, roomId, darkmode, users, rooms } = data;
-  logger.info(`Socket ${id} has joined room ${roomId}`);
+  logger.info(`Socket ${id} has joined room ${roomId}`, data);
   darkmodeSwitch.checked = darkmode;
   changeDarkmode(darkmode);
 });

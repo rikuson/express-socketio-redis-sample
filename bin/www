@@ -45,7 +45,6 @@ io.on('connection', async (socket) => {
   console.log(`Socket is connected`, socket.handshake.query);
   socket.data.userName = userName;
   socket.join(roomId);
-  const room = await roomData.create(roomId, {});
   socket.on('disconnect', () => {
     console.log('Socket is disconnected');
   });
@@ -53,10 +52,14 @@ io.on('connection', async (socket) => {
     console.log(`Receive ${userName}'s message "${message}"`);
     io.to(roomId).emit('message', { id: socket.id, userName, message });
   });
-  socket.on('darkmode', ({ darkmode }) => {
+  socket.on('darkmode', async ({ darkmode }) => {
     console.log(`Change dark mode "${darkmode}"`);
-    io.to(roomId).emit('darkmode', { id: socket.id, roomId, userName, darkmode });
+    const room = await roomData.find(roomId);
     room.setState({ darkmode });
+    io.to(roomId).emit('darkmode', { id: socket.id, roomId, userName, darkmode });
+  });
+  await roomData.transaction(roomId, async () => {
+    const room = await roomData.create(roomId, { darkmode: true });
   });
 });
 io.of('/').adapter.on('create-room', async (roomId) => {
