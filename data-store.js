@@ -1,5 +1,5 @@
 module.exports = ((redis) => {
-  class DataSource {
+  class DataStore {
     static get MAX_RETRY_COUNT() {
       return 100
     }
@@ -117,10 +117,6 @@ module.exports = ((redis) => {
   }
 
   class StatefulEntity extends Entity {
-    constructor() {
-      this.state;
-    }
-
     async getState() {
       this.state ??= await super.getState();
       return this.state;
@@ -138,5 +134,5 @@ module.exports = ((redis) => {
     }
   }
 
-  return DataSource;
+  return DataStore;
 });

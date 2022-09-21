@@ -19,16 +19,16 @@ It is composed with express, socket.io, and redis.
 
 ![class-diagram](./docs/class-diagram.svg)
 
-### DataSource
+### DataStore
 
-DataSource handles data each redis namespace.
+DataStore handles data each redis namespace.
 
 #### find(id: string): Entity
 
 Returns the entity which matchs with the given id.
 
 ```javascript
-const roomStore = new DataSource('room');
+const roomStore = new DataStore('room');
 const room = await roomStore.find('123'); // Search `room:123` from redis
 ```
 
@@ -45,7 +45,7 @@ const room = await roomStore.create('123');
 Deletes the entity which matchs with the given id.
 
 ```javascript
-const roomStore = new DataSource('room');
+const roomStore = new DataStore('room');
 await roomStore.delete('123');
 ```
 
@@ -55,7 +55,7 @@ It enables exclusion control by locking the specific key-value set.
 It prevents conflicts and brings consistency of the data inside callback function.
 
 ```javascript
-const roomStore = new DataSource('room');
+const roomStore = new DataStore('room');
 await roomStore.transaction('123', async (statefulEntity) => {
   // Do something
 });
@@ -70,7 +70,7 @@ Entity represents key-value set of redis.
 Load the current state from redis.
 
 ```javascript
-const roomStore = new DataSource('room');
+const roomStore = new DataStore('room');
 const room = await roomStore.find('123');
 const state = await room.getState(); // { id: xxx, userName: 'Mike', roomId: 123, darkmode: true }
 ```
@@ -81,7 +81,7 @@ It merge current state and given state shallowly and returns merged state.
 It saves state to redis immediately.
 
 ```javascript
-const roomStore = new DataSource('room');
+const roomStore = new DataStore('room');
 const room = await roomStore.find('123');
 await room.setState({ darkmode: false });
 ```
@@ -91,7 +91,7 @@ await room.setState({ darkmode: false });
 Deletes the entity.
 
 ```javascript
-const roomStore = new DataSource('room');
+const roomStore = new DataStore('room');
 const room = await roomStore.find('123');
 await room.delete();
 ```
@@ -103,7 +103,7 @@ It is argument of the transaction callback.
 Once it load data from redis, it caches data.
 
 ```javascript
-const roomStore = new DataSource('room');
+const roomStore = new DataStore('room');
 await roomStore.transaction('123', async (room) => {
   const state = await room.getState(); // { id: xxx, userName: 'Mike', roomId: 123, darkmode: true }
   await room.setState({ darkmode: false });

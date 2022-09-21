@@ -10,7 +10,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { createAdapter } = require('@socket.io/redis-adapter');
 const redis = require('../redis.js');
-const DataSource = require('../data-source.js')(redis);
+const DataStore = require('../data-store.js')(redis);
 
 /**
  * Get port from environment and store in Express.
@@ -30,7 +30,7 @@ Promise.all([pubClient.connect(), subClient.connect()]);
 const io = new Server(server, {
   adapter: createAdapter(pubClient, subClient),
 });
-const roomData = new DataSource('room');
+const roomData = new DataStore('room');
 
 /**
  * Listen on provided port, on all network interfaces.
