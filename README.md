@@ -15,6 +15,10 @@ It is composed with express, socket.io, and redis.
 
 ![component-diagram](./docs/component-diagram.svg)
 
+## Dataflow
+
+![dataflow-model](./docs/dataflow-model.svg)
+
 ## Class
 
 ![class-diagram](./docs/class-diagram.svg)
