@@ -43,7 +43,7 @@ module.exports = ((redis) => {
     async transaction(id, callback) {
       let writable = await this.lock(id);
       if (!writable) {
-        writable = await this.wait(id, Entity.MAX_RETRY_COUNT);
+        writable = await this.wait(id, DataStore.MAX_RETRY_COUNT);
       }
       const key = this.getKey(id);
       await callback(new StatefulEntity(redis, key));
@@ -54,7 +54,7 @@ module.exports = ((redis) => {
       const key = this.getKey(id);
       return !!(await redis.set(`lock:${key}`, '1', {
         EX: Math.ceil(
-          (Entity.RETRY_INTERVAL_MS / 1000) * Entity.MAX_RETRY_COUNT,
+          (DataStore.RETRY_INTERVAL_MS / 1000) * DataStore.MAX_RETRY_COUNT,
         ),
         NX: true,
       }));
@@ -73,7 +73,7 @@ module.exports = ((redis) => {
      }
 
      await new Promise((resolve) =>
-       setTimeout(resolve, Entity.RETRY_INTERVAL_MS),
+       setTimeout(resolve, DataStore.RETRY_INTERVAL_MS),
      );
      if (await this.lock(id)) {
        return true;
