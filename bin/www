@@ -120,15 +120,6 @@ async function onConnection(socket) {
     console.log(`Receive ${userName}'s message "${message}"`);
     this.to(roomId).emit('message', { id: socket.id, userName, message });
   });
-  socket.on('darkmode', async ({ darkmode }) => {
-    console.log(`Change dark mode "${darkmode}"`);
-    const room = await roomData.find(roomId);
-    room.setState({ darkmode });
-    this.to(roomId).emit('darkmode', { id: socket.id, roomId, userName, darkmode });
-  });
-  await roomData.transaction(roomId, async () => {
-    const room = await roomData.create(roomId, { darkmode: true });
-  });
 }
 
 /**
@@ -165,7 +156,7 @@ async function onJoinRoom(roomId, id) {
     if (!state) {
       return;
     }
-    this.to(roomId).emit('join-room', { roomId, id, darkmode: state.darkmode, users: users.inside, rooms });
+    this.to(roomId).emit('join-room', { roomId, id, users: users.inside, rooms });
   });
 }
 

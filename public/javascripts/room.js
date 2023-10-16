@@ -4,7 +4,6 @@ import LogTalk from './log-talk.js';
 const logger = new LogTalk();
 const publishing = document.getElementById('publishing');
 const subscribing = document.getElementById('subscribing');
-const darkmodeSwitch = document.getElementById('darkmode-switch');
 
 const query = {
   roomId: ROOM_ID,
@@ -25,21 +24,13 @@ socket.on('delete-room', (data) => {
   logger.info(`Room ${roomId} was deleted`);
 });
 socket.on('join-room', (data) => {
-  const { id, roomId, darkmode, users, rooms } = data;
+  const { id, roomId, users, rooms } = data;
   logger.info(`Socket ${id} has joined room ${roomId}`, data);
-  darkmodeSwitch.checked = darkmode;
-  changeDarkmode(darkmode);
 });
 socket.on('message', (data) => {
   const { userName, message } = data;
   logger.info(`Receive ${userName}'s message "${message}"`);
   renderMessage(userName, message);
-});
-socket.on('darkmode', (data) => {
-  const { darkmode } = data;
-  logger.info(`Change dark mode "${darkmode}"`);
-  darkmodeSwitch.checked = darkmode;
-  changeDarkmode(darkmode);
 });
 
 function onSubmitMessage(e) {
@@ -48,21 +39,6 @@ function onSubmitMessage(e) {
   socket.emit('message', data);
   logger.info('Send message', 'message');
   publishing.value = '';
-}
-
-function onToggleDarkmodeSwitch(e) {
-  changeDarkmode(e.target.checked);
-  const data = { darkmode: e.target.checked };
-  logger.info('Change darkmode', 'darkmode');
-  socket.emit('darkmode', data);
-}
-
-function changeDarkmode(darkmode) {
-  if (darkmode) {
-    document.body.classList.add('dark')
-  } else {
-    document.body.classList.remove('dark')
-  }
 }
 
 function renderMessage(userName, message) {
@@ -78,4 +54,3 @@ function timeString(date) {
 }
 
 window.onSubmitMessage = onSubmitMessage;
-window.onToggleDarkmodeSwitch = onToggleDarkmodeSwitch;

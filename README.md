@@ -76,7 +76,7 @@ Load the current state from redis.
 ```javascript
 const roomStore = new DataStore('room');
 const room = await roomStore.find('123');
-const state = await room.getState(); // { id: xxx, userName: 'Mike', roomId: 123, darkmode: true }
+const state = await room.getState(); // { id: xxx, userName: 'Mike', roomId: 123 }
 ```
 
 #### setState(state: object): object
@@ -87,7 +87,7 @@ It saves state to redis immediately.
 ```javascript
 const roomStore = new DataStore('room');
 const room = await roomStore.find('123');
-await room.setState({ darkmode: false });
+await room.setState({ userName: 'Mary' });
 ```
 
 #### delete(): boolean
@@ -109,7 +109,7 @@ Once it load data from redis, it caches data.
 ```javascript
 const roomStore = new DataStore('room');
 await roomStore.transaction('123', async (room) => {
-  const state = await room.getState(); // { id: xxx, userName: 'Mike', roomId: 123, darkmode: true }
-  await room.setState({ darkmode: false });
+  const state = await room.getState(); // { id: xxx, userName: 'Mike', roomId: 123 }
+  await room.setState({ userName: 'Mary' });
 });
 ```
