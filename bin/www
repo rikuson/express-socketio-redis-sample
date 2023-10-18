@@ -116,9 +116,15 @@ async function onConnection(socket) {
   socket.on('disconnect', () => {
     console.log('Socket is disconnected');
   });
-  socket.on('message', ({ message }) => {
+  socket.on('message', async ({ message }) => {
     console.log(`Receive ${userName}'s message "${message}"`);
+    const room = await roomData.find(roomId);
+    const { messages = [] } = await room?.getState();
+    room.setState({ messages: [...messages, { id: socket.id, userName, message }] });
     this.to(roomId).emit('message', { id: socket.id, userName, message });
+  });
+  await roomData.transaction(roomId, async () => {
+    const room = await roomData.create(roomId, {});
   });
 }
 
@@ -156,7 +162,14 @@ async function onJoinRoom(roomId, id) {
     if (!state) {
       return;
     }
-    this.to(roomId).emit('join-room', { roomId, id, users: users.inside, rooms });
+    this.to(id).emit('join-room', {
+      roomId,
+      id,
+      users:
+      users.inside,
+      rooms,
+      messages: state.messages || [],
+    });
   });
 }
 
