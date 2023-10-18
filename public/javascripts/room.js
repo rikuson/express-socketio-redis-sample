@@ -1,4 +1,4 @@
-import { io } from 'https://cdn.socket.io/4.5.1/socket.io.esm.min.js';
+import { io } from 'https://cdn.socket.io/4.7.2/socket.io.esm.min.js';
 import LogTalk from './log-talk.js';
 
 const logger = new LogTalk();

@@ -9,14 +9,14 @@
     "start": "nodemon ./bin/www"
   },
   "dependencies": {
-    "@socket.io/redis-adapter": "^7.2.0",
+    "@socket.io/redis-streams-adapter": "^0.1.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "jade": "^1.11.0",
     "morgan": "~1.9.1",
     "redis": "^4.3.0",
-    "socket.io": "^4.5.1"
+    "socket.io": "^4.7.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"

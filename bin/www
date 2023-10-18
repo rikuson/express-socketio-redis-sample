@@ -8,7 +8,7 @@ const app = require('../app');
 const debug = require('debug')('express-socketio-redis-sample:server');
 const http = require('http');
 const { Server } = require('socket.io');
-const { createAdapter } = require('@socket.io/redis-adapter');
+const { createAdapter } = require('@socket.io/redis-streams-adapter');
 const redis = require('../redis.js');
 const DataStore = require('../data-store.js')(redis);
 
@@ -24,12 +24,10 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
-const pubClient = redis;
-const subClient = redis.duplicate();
 const roomData = new DataStore('room');
-Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+redis.connect().then(() => {
   const io = new Server(server, {
-    adapter: createAdapter(pubClient, subClient),
+    adapter: createAdapter(redis),
   });
   io.on('connection', onConnection.bind(io));
   io.of('/').adapter.on('create-room', onCreateRoom.bind(io));
