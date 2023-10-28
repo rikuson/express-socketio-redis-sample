@@ -33,6 +33,7 @@ redis.connect().then(() => {
   io.of('/').adapter.on('create-room', onCreateRoom.bind(io));
   io.of('/').adapter.on('delete-room', onDeleteRoom.bind(io));
   io.of('/').adapter.on('join-room', onJoinRoom.bind(io));
+  process.on('SIGTERM', () => io.close());
 });
 
 /**
