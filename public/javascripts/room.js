@@ -13,7 +13,9 @@ const socket = io({ query });
 logger.info('Try to connect socket', query);
 
 socket.on('connect', () => {
-  logger.info('Socket is connected');
+  logger.info('Socket is connected', {
+    recovered: socket.recovered,
+  });
 });
 socket.on('create-room', (data) => {
   const { roomId } =  data;

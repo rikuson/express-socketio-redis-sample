@@ -28,6 +28,10 @@ const roomData = new DataStore('room');
 redis.connect().then(() => {
   const io = new Server(server, {
     adapter: createAdapter(redis),
+    connectionStateRecovery: {
+      maxDisconnectionDuration: 2 * 60 * 1000,
+      skipMiddlewares: true,
+    },
   });
   io.on('connection', onConnection.bind(io));
   io.of('/').adapter.on('create-room', onCreateRoom.bind(io));
@@ -110,7 +114,11 @@ function onListening() {
 
 async function onConnection(socket) {
   const { roomId, userName } = socket.handshake.query;
-  console.log(`Socket is connected`, socket.handshake.query);
+  console.log(`Socket is connected`, {
+    query: socket.handshake.query,
+    data: socket.data,
+    recovered: socket.recovered,
+  });
   socket.join(roomId);
   socket.on('disconnect', () => {
     console.log('Socket is disconnected');
