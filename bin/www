@@ -150,20 +150,6 @@ async function onCreateRoom(roomId) {
 
 async function onJoinRoom(roomId, id) {
   console.log(`Socket ${id} has joined room ${roomId}`);
-  const sockets = await this.fetchSockets();
-  const users = sockets.reduce((categorized, socket) => {
-    const user = {
-      id: socket.id,
-      name: socket.handshake.query.userName,
-      rooms: socket.rooms,
-    };
-    const category = Array.from(socket.rooms).includes(roomId) ? 'inside' : 'outside';
-    categorized[category].push(user)
-    return categorized;
-  }, { inside: [], outside: [] });
-  const rooms = Array.from(this.of('/').adapter.rooms)
-    .filter(([roomId]) => !users.outside.some((user) => user.id === roomId))
-    .map(([roomId]) => roomId);
   await roomData.transaction(roomId, async (room) => {
     const state = await room?.getState();
     if (!state) {
@@ -172,9 +158,6 @@ async function onJoinRoom(roomId, id) {
     this.to(id).emit('join-room', {
       roomId,
       id,
-      users:
-      users.inside,
-      rooms,
       messages: state.messages || [],
     });
   });

@@ -26,7 +26,7 @@ socket.on('delete-room', (data) => {
   logger.info(`Room ${roomId} was deleted`);
 });
 socket.on('join-room', (data) => {
-  const { id, roomId, users, rooms, messages } = data;
+  const { id, roomId, messages } = data;
   logger.info(`Socket ${id} has joined room ${roomId}`, data);
   const nodes = messages.forEach(({ userName, message }) => renderMessage(userName, message));
 });
