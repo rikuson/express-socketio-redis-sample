@@ -7,9 +7,7 @@ services:
     ports:
       - 3000:3000
     entrypoint:
-      - nodemon
-      - --signal
-      - SIGTERM
+      - node
       - ./bin/www
     expose:
       - 3000
