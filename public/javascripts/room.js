@@ -9,7 +9,7 @@ const query = {
   roomId: ROOM_ID,
   userName: USER_NAME,
 };
-const socket = io({ query });
+const socket = io({ query, transports: ['websocket'] });
 logger.info('Try to connect socket', query);
 
 socket.on('connect', () => {
